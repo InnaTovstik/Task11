@@ -7,24 +7,29 @@ import java.io.InputStreamReader;
 public class Main {
 
     public static void main(String[] args) {
-        System.out.println("Welcome To MyApp");
+        System.out.println("Добро пожаловать в консольное приложение!");
+        System.out.println("1.\tВы зададите число, которое определит длину массива целых чисел.\n" +
+                "2.\tЗаполните массив значениями.\n" +
+                "3.\tВыберете из массива два числа по индексу.\n" +
+                "4.\tПолучите результат деления первого числа на второе.\n");
         BufferedReader buffer = new BufferedReader(new InputStreamReader(System.in));
         try {
-            //1.Предложили пользователю ввести число. Это число будет длиной массива целых чисел
-            int lengthArray = readInteger(buffer, "Please Enter The Number For Length Of An Array Of Integers: ");
+            int lengthArray = readInteger(buffer, "Введите целое число длины массива array: ");
             int[] array = new int[lengthArray];
-            //2.	Предложили пользователю заполнить массив.
             for (int i = 0; i < lengthArray; i++) {
-                array[i] = readInteger(buffer, "Please Enter The Value Of The Array Element a[" + i + "] = ");
+                array[i] = readInteger(buffer, "Введите целое число для array[" + i + "] = ");
             }
-            //Предложили пользователю выбрать 2 числа из массива по индексу
-            int[] ar = readIndex(buffer, array);
+            // Получили массив из двух значений
+            int[] ar = readIndex(buffer, array, "Выберите значение массива по индексу: ");
             // Разделили первое число на второе
-            int rez = ar[0] / ar[1]; // ожидаем ArithmeticException только для int
+            int res = ar[0] / ar[1]; // ожидаем ArithmeticException - только для int
             // для получения результата double приводим делимое к double
-            System.out.println(ar[0] + " / " + ar[1] + " = " + ((double) ar[0] / ar[1]));
-        } catch (ArithmeticException | ArrayIndexOutOfBoundsException e) {
-            e.printStackTrace();
+            System.out.println("Результат: " + ar[0] + " / " + ar[1] + " = " + ((double) ar[0] / ar[1]));
+        } catch (ArithmeticException | ArrayIndexOutOfBoundsException | NumberFormatException e) {
+            System.out.println(e.getMessage());
+        }
+        finally {
+            System.out.println("Если хотите повторить выполнение, запустите приложение еще раз.");
         }
 
     }
@@ -33,26 +38,28 @@ public class Main {
         int count = 0;
         int maxTries = 3;
         while (true) {
-            System.out.print(prompt);
             try {
+                System.out.print(prompt);
                 return Integer.parseInt(buffer.readLine());
             } catch (NumberFormatException | IOException e) {
-                if (++count == maxTries) try {
-                    throw e;
-                } catch (IOException ioException) {
-                    ioException.printStackTrace();
+                if (++count == maxTries) {
+                    try {
+                        System.out.print("Ошибка введенного числа: ");
+                        throw e;
+                    } catch (IOException ioException) {
+                        System.out.println(e.getMessage());
+                    }
                 }
             }
         }
     }
 
-    private static int[] readIndex(BufferedReader buffer, int[] array) {
+    private static int[] readIndex(BufferedReader buffer, int[] array, String prompt) {
         int a;
         int count = 0; // счетчик попыток введения значения
-        int maxTries = 5; // ограничим 5 попытками
+        int maxTries = 3; // ограничим 3 попытками
         int j = 0;
         int[] ar = new int[2];
-        String prompt = "Please Select Index Of Number: ";
         while (true) {
             try {
                 while (j < 2) {
@@ -63,6 +70,7 @@ public class Main {
                 return ar;
             } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
                 if (++count == maxTries) {
+                    System.out.print("Ошибка введенного индекса массива: ");
                     throw e;
                 }
             }
